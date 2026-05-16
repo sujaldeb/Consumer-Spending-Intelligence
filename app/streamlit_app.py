@@ -67,6 +67,7 @@ with st.sidebar:
         '<p style="font-size:0.7rem; color:#64748b;">Sujal Deb · github.com/sujaldeb</p>',
         unsafe_allow_html=True
     )
+
 df = st.session_state.df
 
 st.markdown("## Consumer Spending Intelligence")
@@ -90,7 +91,10 @@ with col1:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Total Revenue</div>
-        <div class="kpi-value violet">${total_revenue/1e6:.1f}M</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#7c3aed;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">${total_revenue/1e6:.1f}M</div>
+        </div>
         <div class="kpi-sub">Jan 2019 – Jun 2020</div>
     </div>""", unsafe_allow_html=True)
 
@@ -98,7 +102,10 @@ with col2:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Total Transactions</div>
-        <div class="kpi-value blue">{total_txns:,}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#3b82f6;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">{total_txns:,}</div>
+        </div>
         <div class="kpi-sub">18 months of data</div>
     </div>""", unsafe_allow_html=True)
 
@@ -106,7 +113,10 @@ with col3:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Unique Customers</div>
-        <div class="kpi-value emerald">{unique_custs:,}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">{unique_custs:,}</div>
+        </div>
         <div class="kpi-sub">983 high-frequency buyers</div>
     </div>""", unsafe_allow_html=True)
 
@@ -118,7 +128,10 @@ with col4:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Avg Transaction</div>
-        <div class="kpi-value amber">${avg_spend:.2f}</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#f59e0b;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">${avg_spend:.2f}</div>
+        </div>
         <div class="kpi-sub">Median $47.52</div>
     </div>""", unsafe_allow_html=True)
 
@@ -126,7 +139,10 @@ with col5:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Fraud Rate</div>
-        <div class="kpi-value crimson">{fraud_rate:.2f}%</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#ef4444;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">{fraud_rate:.2f}%</div>
+        </div>
         <div class="kpi-sub">{fraud_count:,} fraudulent transactions</div>
     </div>""", unsafe_allow_html=True)
 
@@ -134,7 +150,10 @@ with col6:
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Anomaly Detection AUC</div>
-        <div class="kpi-value lavender">0.9032</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 0;">
+            <div style="width:10px;height:10px;border-radius:50%;background:#a78bfa;flex-shrink:0;"></div>
+            <div style="font-size:1.75rem;font-weight:700;color:#ffffff;">0.9032</div>
+        </div>
         <div class="kpi-sub">Unsupervised · zero label leakage</div>
     </div>""", unsafe_allow_html=True)
 
@@ -144,8 +163,7 @@ st.markdown('<p class="section-header">Monthly Revenue Trend</p>',
 
 monthly = (
     df.groupby("month")["amt"]
-    .sum()
-    .reset_index()
+    .sum().reset_index()
 )
 monthly["month_str"] = monthly["month"].astype(str)
 monthly["revenue_m"] = monthly["amt"] / 1e6
@@ -158,8 +176,8 @@ fig.add_trace(go.Scatter(
     line=dict(color="#7c3aed", width=2.5),
     marker=dict(size=6, color="#7c3aed"),
     fill="tozeroy",
-    fillcolor="rgba(124, 58, 237, 0.1)",
-    name="Revenue"
+    fillcolor="rgba(124,58,237,0.1)",
+    hovertemplate="<b>%{x}</b><br>Revenue: $%{y:.2f}M<extra></extra>"
 ))
 fig.update_layout(
     paper_bgcolor="#0d1117",

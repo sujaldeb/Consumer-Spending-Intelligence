@@ -169,16 +169,15 @@ h1, h2, h3 {
 }
 
 /* force white text globally */
-.stMarkdown, .stMarkdown p, .stMarkdown span,
-.stMarkdown div, .stText, label, .stSelectbox,
+.stMarkdown p,
+.stMarkdown div,
+.stText, label,
 [data-testid="stMarkdownContainer"] p {
     color: #e2e8f0 !important;
 }
 
 /* sidebar text */
-[data-testid="stSidebar"] * {
-    color: #e2e8f0 !important;
-}
+
 
 [data-testid="stSidebar"] .sidebar-title {
     color: #7c3aed !important;

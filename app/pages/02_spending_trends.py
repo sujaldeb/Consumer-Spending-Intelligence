@@ -60,7 +60,6 @@ st.markdown(
 )
 st.markdown("---")
 
-# build RFM
 snapshot_date = pd.Timestamp(df["trans_date_trans_time"].max()) + pd.Timedelta(days=1)
 
 rfm = (
@@ -103,14 +102,13 @@ age_labels = ["Under 18", "18-30", "31-45", "46-60", "60+"]
 rfm["age_group"] = pd.cut(rfm["age"], bins=age_bins,
                           labels=age_labels, right=True)
 
-# segment profiles
 seg_profile = (
     rfm.groupby("segment")
     .agg(
-        customers     = ("cc_num", "count"),
-        avg_recency   = ("recency", "mean"),
-        avg_frequency = ("frequency", "mean"),
-        avg_monetary  = ("monetary", "mean"),
+        customers       = ("cc_num", "count"),
+        avg_recency     = ("recency", "mean"),
+        avg_frequency   = ("frequency", "mean"),
+        avg_monetary    = ("monetary", "mean"),
         median_monetary = ("monetary", "median"),
     )
     .round(2)
@@ -118,28 +116,32 @@ seg_profile = (
     .sort_values("avg_monetary", ascending=False)
 )
 
-# KPI cards for segments
+seg_colors_map = {
+    "Champions": "#7c3aed",
+    "Loyal"    : "#10b981",
+    "Recent"   : "#f59e0b",
+    "At Risk"  : "#ef4444",
+    "Lost"     : "#94a3b8",
+    "Potential": "#3b82f6",
+}
+
 st.markdown('<p class="section-header">RFM Segment Overview</p>',
             unsafe_allow_html=True)
 
-seg_colors_map = {
-    "Champions": COLORS["primary"],
-    "Loyal"    : COLORS["emerald"],
-    "Recent"   : COLORS["amber"],
-    "At Risk"  : COLORS["crimson"],
-    "Lost"     : COLORS["subtext"],
-    "Potential": COLORS["blue"],
-}
-
 cols = st.columns(len(seg_profile))
-for i, row in seg_profile.iterrows():
-    color = seg_colors_map.get(row["segment"], COLORS["primary"])
-    with cols[list(seg_profile.index).index(i)]:
+for idx, (_, row) in enumerate(seg_profile.iterrows()):
+    color = seg_colors_map.get(row["segment"], "#7c3aed")
+    with cols[idx]:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-label">{row['segment']}</div>
-            <div class="kpi-value" style="color:{color}; font-size:1.4rem;">
-                {int(row['customers'])}
+            <div style="display:flex;align-items:center;justify-content:center;
+                        gap:8px;margin:8px 0;">
+                <div style="width:10px;height:10px;border-radius:50%;
+                            background:{color};flex-shrink:0;"></div>
+                <div style="font-size:1.6rem;font-weight:700;color:#ffffff;">
+                    {int(row['customers'])}
+                </div>
             </div>
             <div class="kpi-sub">Avg LTV: ${row['avg_monetary']/1000:.1f}K</div>
             <div class="kpi-sub">Avg freq: {row['avg_frequency']:,.0f}</div>
@@ -147,11 +149,10 @@ for i, row in seg_profile.iterrows():
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# segment charts
 col1, col2 = st.columns(2)
 
 with col1:
-    seg_colors_list = [seg_colors_map.get(s, COLORS["primary"])
+    seg_colors_list = [seg_colors_map.get(s, "#7c3aed")
                        for s in seg_profile["segment"]]
     fig = go.Figure()
     fig.add_trace(go.Bar(
@@ -163,8 +164,8 @@ with col1:
         textfont=dict(color=COLORS["text"], size=10),
         hovertemplate="<b>%{x}</b><br>Avg LTV: $%{y:.1f}K<extra></extra>"
     ))
-    layout = base_layout(height=320, title="Average Lifetime Value by Segment ($K)")
-    layout["yaxis"]["ticksuffix"] = "K"
+    layout = base_layout(height=320,
+                         title="Average Lifetime Value by Segment ($K)")
     layout["yaxis"]["range"] = [0, seg_profile["avg_monetary"].max() / 1000 * 1.25]
     fig.update_layout(**layout)
     st.plotly_chart(fig, use_container_width=True)
@@ -180,12 +181,12 @@ with col2:
         textfont=dict(color=COLORS["text"], size=10),
         hovertemplate="<b>%{x}</b><br>Avg Frequency: %{y:,.0f}<extra></extra>"
     ))
-    layout = base_layout(height=320, title="Average Transaction Frequency by Segment")
+    layout = base_layout(height=320,
+                         title="Average Transaction Frequency by Segment")
     layout["yaxis"]["range"] = [0, seg_profile["avg_frequency"].max() * 1.25]
     fig.update_layout(**layout)
     st.plotly_chart(fig, use_container_width=True)
 
-# demographic hypothesis tests
 st.markdown('<p class="section-header">Demographic Analysis & Hypothesis Tests</p>',
             unsafe_allow_html=True)
 
@@ -251,7 +252,6 @@ with col4:
     fig.update_layout(**layout)
     st.plotly_chart(fig, use_container_width=True)
 
-# cohort retention heatmap
 st.markdown('<p class="section-header">Cohort Retention Matrix</p>',
             unsafe_allow_html=True)
 
@@ -281,10 +281,10 @@ cohort_matrix = cohort_data.pivot_table(
     index="cohort_month", columns="cohort_index", values="customers"
 )
 
-retention = (cohort_matrix.divide(cohort_sizes, axis=0) * 100).round(1)
-ret_values = retention.values
-month_labels = [str(m) for m in retention.index]
-index_labels = [f"M{i}" for i in retention.columns]
+retention     = (cohort_matrix.divide(cohort_sizes, axis=0) * 100).round(1)
+ret_values    = retention.values
+month_labels  = [str(m) for m in retention.index]
+index_labels  = [f"M{i}" for i in retention.columns]
 
 fig = go.Figure(data=go.Heatmap(
     z=ret_values,
@@ -323,7 +323,6 @@ fig.update_layout(
 )
 st.plotly_chart(fig, use_container_width=True)
 
-# insights
 col_i1, col_i2 = st.columns(2)
 with col_i1:
     st.markdown("""
