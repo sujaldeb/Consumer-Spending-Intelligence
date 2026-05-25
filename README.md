@@ -7,7 +7,6 @@
 **Live Dashboard** — [consumer-spending-intelligence-system.streamlit.app](https://consumer-spending-intelligence-system.streamlit.app)
 
 ---
-
 ## One-Line Summary
 
 > Built an end-to-end consumer spending analytics pipeline on 1.296M credit card transactions — engineering 4 behavioural features, running 7 formal hypothesis tests across categories, demographics, and geography, training an unsupervised Isolation Forest that achieves **ROC-AUC of 0.9032** without ever seeing the fraud label, and detecting a statistically confirmed February 2020 spending shift consistent with COVID-19 impact — delivered through a 6-page interactive Streamlit dashboard deployed on Streamlit Cloud.
